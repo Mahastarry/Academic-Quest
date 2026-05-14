@@ -1,15 +1,24 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: MSCQuest AI Academic Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: uploads
+    description: File upload operations
+  - name: processing
+    description: AI processing jobs
+  - name: notes
+    description: Study notes
+  - name: questions
+    description: Review questions
+  - name: analytics
+    description: Analytics and metrics
 paths:
   /healthz:
     get:
@@ -24,6 +33,312 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /uploads:
+    get:
+      operationId: listUploads
+      tags: [uploads]
+      summary: List all uploaded files
+      responses:
+        "200":
+          description: List of uploads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Upload"
+    post:
+      operationId: createUpload
+      tags: [uploads]
+      summary: Register an uploaded file
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Upload"
+
+  /uploads/{id}:
+    delete:
+      operationId: deleteUpload
+      tags: [uploads]
+      summary: Delete an uploaded file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /processing:
+    get:
+      operationId: listProcessingJobs
+      tags: [processing]
+      summary: List all AI processing jobs
+      responses:
+        "200":
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProcessingJob"
+    post:
+      operationId: createProcessingJob
+      tags: [processing]
+      summary: Start an AI processing job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProcessingJobInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProcessingJob"
+
+  /processing/{id}:
+    patch:
+      operationId: updateProcessingJob
+      tags: [processing]
+      summary: Update processing job status/progress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProcessingJobUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProcessingJob"
+
+  /notes:
+    get:
+      operationId: listNotes
+      tags: [notes]
+      summary: List all study notes
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: chapter
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StudyNote"
+    post:
+      operationId: createNote
+      tags: [notes]
+      summary: Create a study note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudyNoteInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudyNote"
+
+  /notes/{id}:
+    get:
+      operationId: getNote
+      tags: [notes]
+      summary: Get a single study note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Study note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudyNote"
+    delete:
+      operationId: deleteNote
+      tags: [notes]
+      summary: Delete a study note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /questions:
+    get:
+      operationId: listQuestions
+      tags: [questions]
+      summary: List all review questions
+      parameters:
+        - name: difficulty
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: bloom_level
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: chapter
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReviewQuestion"
+    post:
+      operationId: createQuestion
+      tags: [questions]
+      summary: Create a review question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewQuestionInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewQuestion"
+
+  /questions/{id}:
+    delete:
+      operationId: deleteQuestion
+      tags: [questions]
+      summary: Delete a question
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /analytics/summary:
+    get:
+      operationId: getAnalyticsSummary
+      tags: [analytics]
+      summary: Get analytics summary
+      responses:
+        "200":
+          description: Analytics summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsSummary"
+
+  /analytics/bloom-distribution:
+    get:
+      operationId: getBloomDistribution
+      tags: [analytics]
+      summary: Get Bloom taxonomy distribution
+      responses:
+        "200":
+          description: Bloom distribution
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DistributionItem"
+
+  /analytics/difficulty-distribution:
+    get:
+      operationId: getDifficultyDistribution
+      tags: [analytics]
+      summary: Get difficulty distribution
+      responses:
+        "200":
+          description: Difficulty distribution
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DistributionItem"
+
+  /analytics/topic-coverage:
+    get:
+      operationId: getTopicCoverage
+      tags: [analytics]
+      summary: Get topic coverage breakdown
+      responses:
+        "200":
+          description: Topic coverage
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopicCoverage"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +349,232 @@ components:
       required:
         - status
 
+    Upload:
+      type: object
+      required: [id, fileName, fileType, fileSize, status, createdAt]
+      properties:
+        id:
+          type: integer
+        fileName:
+          type: string
+        fileType:
+          type: string
+          enum: [syllabus, textbook, notes, other]
+        fileSize:
+          type: integer
+        status:
+          type: string
+          enum: [uploading, processing, ready, error]
+        progress:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+
+    UploadInput:
+      type: object
+      required: [fileName, fileType, fileSize]
+      properties:
+        fileName:
+          type: string
+        fileType:
+          type: string
+          enum: [syllabus, textbook, notes, other]
+        fileSize:
+          type: integer
+
+    ProcessingJob:
+      type: object
+      required: [id, jobType, status, progress, uploadId, createdAt]
+      properties:
+        id:
+          type: integer
+        jobType:
+          type: string
+          enum: [study_notes, mcq_generation, both]
+        status:
+          type: string
+          enum: [queued, processing, completed, failed]
+        progress:
+          type: integer
+        uploadId:
+          type: integer
+        uploadName:
+          type: ["string", "null"]
+        estimatedTime:
+          type: ["integer", "null"]
+        completedAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ProcessingJobInput:
+      type: object
+      required: [jobType, uploadId]
+      properties:
+        jobType:
+          type: string
+          enum: [study_notes, mcq_generation, both]
+        uploadId:
+          type: integer
+
+    ProcessingJobUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [queued, processing, completed, failed]
+        progress:
+          type: integer
+        estimatedTime:
+          type: ["integer", "null"]
+        completedAt:
+          type: ["string", "null"]
+
+    StudyNote:
+      type: object
+      required: [id, title, chapter, content, keyTakeaways, definitions, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        chapter:
+          type: string
+        content:
+          type: string
+        keyTakeaways:
+          type: array
+          items:
+            type: string
+        definitions:
+          type: array
+          items:
+            type: string
+        formulaBlocks:
+          type: array
+          items:
+            type: string
+        uploadId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+
+    StudyNoteInput:
+      type: object
+      required: [title, chapter, content, keyTakeaways, definitions]
+      properties:
+        title:
+          type: string
+        chapter:
+          type: string
+        content:
+          type: string
+        keyTakeaways:
+          type: array
+          items:
+            type: string
+        definitions:
+          type: array
+          items:
+            type: string
+        formulaBlocks:
+          type: array
+          items:
+            type: string
+        uploadId:
+          type: ["integer", "null"]
+
+    ReviewQuestion:
+      type: object
+      required: [id, question, options, correctAnswer, bloomLevel, difficulty, chapter, createdAt]
+      properties:
+        id:
+          type: integer
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        correctAnswer:
+          type: integer
+        bloomLevel:
+          type: string
+          enum: [remember, understand, apply, analyze, evaluate, create]
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        chapter:
+          type: string
+        evidenceQuote:
+          type: ["string", "null"]
+        uploadId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+
+    ReviewQuestionInput:
+      type: object
+      required: [question, options, correctAnswer, bloomLevel, difficulty, chapter]
+      properties:
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        correctAnswer:
+          type: integer
+        bloomLevel:
+          type: string
+          enum: [remember, understand, apply, analyze, evaluate, create]
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        chapter:
+          type: string
+        evidenceQuote:
+          type: ["string", "null"]
+        uploadId:
+          type: ["integer", "null"]
+
+    AnalyticsSummary:
+      type: object
+      required: [totalUploads, totalNotes, totalQuestions, studyCompletionPercent, avgDifficulty]
+      properties:
+        totalUploads:
+          type: integer
+        totalNotes:
+          type: integer
+        totalQuestions:
+          type: integer
+        studyCompletionPercent:
+          type: integer
+        avgDifficulty:
+          type: string
+        processingJobsCompleted:
+          type: integer
+
+    DistributionItem:
+      type: object
+      required: [label, count, percent]
+      properties:
+        label:
+          type: string
+        count:
+          type: integer
+        percent:
+          type: number
+
+    TopicCoverage:
+      type: object
+      required: [topic, notesCount, questionsCount, coveragePercent]
+      properties:
+        topic:
+          type: string
+        notesCount:
+          type: integer
+        questionsCount:
+          type: integer
+        coveragePercent:
+          type: number
